@@ -1,17 +1,17 @@
-# 🐍 Simple Port Scanner (TCP)
+# 🐍 Scanner de Portas Simples (TCP)
 
 ## 📖 Introdução
 
-Este projeto é um **Port Scanner (Scanner de Portas)** básico desenvolvido em Python. Seu objetivo é identificar quais portas TCP estão abertas em um host específico, sendo uma ferramenta essencial na fase inicial de **reconhecimento** em um teste de penetração ou análise de segurança.
+Este projeto consiste num **Scanner de Portas (Port Scanner)** básico desenvolvido em Python. A sua principal função é identificar quais portas TCP estão ativas e abertas num alvo específico.
 
-O script foi criado para praticar o uso da biblioteca `socket` do Python, tratamento de exceções e manipulação de fluxos de rede.
+Trata-se de uma ferramenta fundamental na fase de **reconhecimento** (levantamento de informações) de qualquer análise ou teste de segurança. O script foi criado para praticar o uso da biblioteca `socket` do Python, tratamento de exceções e a gestão de recursos de rede.
 
 ## ✨ Funcionalidades
 
-* **Varredura TCP:** Utiliza a função `connect_ex` da biblioteca `socket` para testar a conectividade TCP, simulando o início do *Three-Way Handshake*.
-* **Timeout Definido:** Possui um *timeout* de 1 segundo para garantir a rapidez da varredura, evitando bloqueios em portas filtradas ou fechadas.
-* **Portas Comuns:** Por padrão, escaneia o intervalo das 100 portas mais comuns (1 a 100).
-* **Identificação de Serviço:** Tenta identificar o nome do serviço padrão associado a cada porta aberta (ex: porta 80 → `http`).
+* **Varredura TCP:** Utiliza a função `connect_ex` da biblioteca `socket` para testar a conectividade TCP no alvo, simulando o início de um *handshake* de três vias. 
+* **Timeout Definido:** Implementa um limite de tempo (*timeout*) de 1 segundo para garantir que a varredura seja rápida e eficiente, não ficando bloqueada em portas filtradas.
+* **Portas Comuns:** Por predefinição, escaneia um intervalo das 100 portas mais frequentemente utilizadas (de 1 a 100).
+* **Identificação de Serviço:** Tenta mapear o número da porta aberta para o nome do serviço padrão associado (ex: porta 22 → `ssh`).
 
 ## 🛠️ Como Executar
 
@@ -21,25 +21,25 @@ O script foi criado para praticar o uso da biblioteca `socket` do Python, tratam
 
 ### Execução
 
-1.  **Clone o Repositório:**
+1.  **Clonar o Repositório:**
     ```bash
     git clone [LINK_DO_SEU_REPOSITORIO]
     cd simple-port-scanner
     ```
 
-2.  **Execute o Script:**
+2.  **Correr o Script:**
     ```bash
     python port_scanner.py
     ```
 
-3.  **Insira o Alvo:** O programa solicitará que você digite o endereço IP ou nome do host que deseja escanear.
+3.  **Inserir o Alvo:** O programa irá pedir que insira o endereço IP ou nome do host que pretende escanear.
 
-    > **⚠️ Nota de Segurança:** Sempre obtenha permissão expressa (por escrito) antes de escanear qualquer rede ou sistema que não seja de sua propriedade.
+    > **⚠️ Nota de Segurança:** É obrigatório obter sempre permissão explícita (por escrito) antes de escanear qualquer rede ou sistema que não seja de sua propriedade.
 
 ## 💡 Próximos Passos e Oportunidades de Melhoria
 
-Este é um projeto inicial robusto. Para evoluir esta ferramenta e aplicar os conceitos de POO e concorrência que discutimos, considere as seguintes melhorias:
+Este é um projeto inicial sólido. Para continuar a evoluir a ferramenta e aplicar conceitos avançados de Python, considere as seguintes refatorações:
 
-1.  **Argumentos de Linha de Comando:** Utilizar `argparse` ou `Click` para receber o alvo (`-t <alvo>`) e o intervalo de portas (`-p <min>-<max>`) como argumentos.
-2.  **Refatoração POO:** Envolver a lógica de varredura em uma classe `PortScanner` para encapsulamento, herança e melhor modularidade.
-3.  **Varredura Multithread:** Implementar `threading` ou `asyncio` para escanear múltiplas portas simultaneamente, aumentando drasticamente a velocidade.
+1.  **Argumentos de Linha de Comando:** Utilizar a biblioteca `argparse` para permitir que o alvo (`-t <alvo>`) e o intervalo de portas (`-p <min>-<max>`) sejam passados diretamente como argumentos ao correr o script.
+2.  **Refatoração POO:** Reorganizar a lógica do scanner numa classe `PortScanner`, aplicando os conceitos de Programação Orientada a Objetos (POO) para maior modularidade e extensibilidade.
+3.  **Varredura Concorrente:** Implementar `threading` ou `asyncio` para escanear várias portas em simultâneo (concorrência), o que aumentará significativamente a velocidade de execução da ferramenta.
