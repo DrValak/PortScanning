@@ -2,8 +2,37 @@
 
 import socket # Biblioteca para operações de rede
 import sys # Biblioteca para manipulação do sistema
+import threading # Biblioteca para operações de threading
 from concurrent.futures import ThreadPoolExecutor # Biblioteca para execução de tarefas em paralelo
 
+def get_local_ip():
+    """
+    Obtém o endereço IP local da máquina.
+    Retorna o IP como string.
+    """
+    try:
+        # Cria um socket temporário para descobrir o IP local
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Conecta a um servidor externo (não envia dados)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except Exception:
+        return "127.0.0.1"
+
+def validate_target(target):
+    """
+    Valida se o alvo fornecido é um endereço IP ou nome de host válido.
+    Retorna o endereço IP se válido, caso contrário, retorna None.
+    """
+    try:
+        # Tenta resolver o nome do host para um endereço IP
+        socket.gethostbyname(target)
+        return target
+    except socket.gaierror:
+        print(f"Erro: O host {target} não pôde ser resolvido.")
+        return None
 
 def port_scan(target, port):
     """
@@ -45,16 +74,44 @@ def scan_ports(target, start_port, end_port, max_threads=100):
     """
     Escaneia um intervalo de portas usando multi-threading.
     """
-    with ThreadPoolExecutor(max_workers=max_threads) as executor:
-        # Cria uma lista de tarefas para executar em paralelo
-        futures = [executor.submit(port_scan, target, port) for port in range(start_port, end_port + 1)]
+    total_ports = end_port - start_port + 1
+    completed = [0]  # Usa lista para compartilhar entre threads
+    lock = threading.Lock()  # Previne conflitos
+    
+    def scan_with_progress(port):
+        result = port_scan(target, port)
         
-        # Aguarda todas as tarefas completarem
+        # Atualiza progresso de forma segura
+        with lock:
+            completed[0] += 1
+            progress = (completed[0] / total_ports) * 100
+            
+            # Mostra progresso a cada 10 portas
+            if completed[0] % 10 == 0 or completed[0] == total_ports:
+                bar_length = 20
+                filled = int(bar_length * completed[0] / total_ports)
+                bar = '█' * filled + '░' * (bar_length - filled)
+                print(f"\rProgresso: [{bar}] {progress:.0f}% ({completed[0]}/{total_ports})", end='')
+        
+        return result
+    
+    with ThreadPoolExecutor(max_workers=max_threads) as executor:
+        futures = [executor.submit(scan_with_progress, port) 
+                   for port in range(start_port, end_port + 1)]
+        
         for future in futures:
             future.result()
-
+    
+    print()  # Nova linha após a barra de progresso
 
 if __name__ == "__main__":
+    
+    # Mostra o IP local do usuário
+    local_ip = get_local_ip()
+    print("=" * 50)
+    print(f"🖥️  Seu IP local: {local_ip}")
+    print("=" * 50)
+    print()
     
     target_host = input("Digite o endereço IP ou nome do host alvo: ")
     
