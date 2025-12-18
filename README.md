@@ -1,77 +1,344 @@
-# 🐍 Scanner de Portas Simples (TCP)
+# 🛡️ Port Scanner Enterprise v2.0
 
-## 📖 Introdução
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Cybersecurity](https://img.shields.io/badge/Cybersecurity-Network%20Analysis-red.svg)](https://github.com)
 
-Este projeto consiste num **Scanner de Portas (Port Scanner)** desenvolvido em Python com suporte a **multi-threading** para varreduras rápidas e eficientes.  A sua principal função é identificar quais as portas TCP estão ativas e abertas num alvo específico. 
+> **Professional TCP Port Scanner** with multi-threading, logging system, JSON export, and enterprise-grade features.
 
-Trata-se de uma ferramenta fundamental na fase de **reconhecimento** (levantamento de informações) de qualquer análise ou teste de segurança.  O script foi criado para praticar o uso das bibliotecas `socket` e `concurrent.futures` em Python.
+---
 
-## ✨ Funcionalidades
+## 📖 Table of Contents
 
-* **Varredura TCP:** Utiliza a função `connect_ex` da biblioteca `socket` para testar a conectividade TCP no alvo, simulando o início de um *handshake* de três vias.  
-* **Timeout Definido:** Implementa um limite de tempo (*timeout*) de 1 segundo para garantir que a varredura seja rápida e eficiente, não ficando bloqueada em portas filtradas.
-* **Portas Comuns:** Por predefinição, faz scan num intervalo das 100 portas mais frequentemente utilizadas (de 1 a 100).
-* **Identificação de Serviço:** Tenta mapear o número da porta aberta para o nome do serviço padrão associado (ex: porta 22 → `ssh`).
-* **Varredura Concorrente:** Implementa `ThreadPoolExecutor` para fazer scan de várias portas em simultâneo, aumentando significativamente a velocidade de execução (até 100 threads em paralelo).
-* **Código Modular:** Organizado com funções separadas (`port_scan` e `scan_ports`) para maior legibilidade e manutenção.
+- [Overview](#-overview)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Usage](#-usage)
+  - [Interactive Mode](#interactive-mode)
+  - [Command Line Mode](#command-line-mode)
+  - [Configuration File](#configuration-file)
+- [Examples](#-examples)
+- [Architecture](#-architecture)
+- [Security & Ethics](#-security--ethics)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-## 🛠️ Como Executar
+---
 
-### Pré-requisitos
+## 🎯 Overview
 
-* Python 3.x instalado. 
+**Port Scanner Enterprise** is a professional-grade network reconnaissance tool developed in Python. It identifies open TCP ports on target systems, maps services, and generates detailed reports in JSON format.
 
-### Execução
+This tool is designed for:
+- 🔍 **Network Security Audits**
+- 🖥️ **Infrastructure Mapping**
+- 🛡️ **Penetration Testing** (authorized only)
+- 📚 **Educational Purposes** (Cybersecurity Learning)
 
-1.   **Clonar o Repositório:**
-    ```bash
-    git clone https://github.com/DrValak/PortScanning.git
-    cd PortScanning
-    ```
+### Key Highlights
 
-2.  **Correr o Script:**
-    ```bash
-    python PortScanner. py
-    ```
+- ⚡ **High Performance**: Multi-threaded scanning (up to 100+ concurrent threads)
+- 📊 **Progress Tracking**: Real-time visual progress bar
+- 📝 **Professional Logging**: Dual output (file + console)
+- 💾 **JSON Export**: Structured scan results with timestamps
+- ⚙️ **Configurable**: External JSON configuration file
+- 🎨 **User-Friendly**: Interactive mode + CLI arguments
 
-3.  **Inserir o Alvo:** O programa irá pedir que insira o endereço IP ou nome do host que pretende escanear.
+---
 
-    > **⚠️ Nota de Segurança:** É obrigatório obter sempre permissão explícita (por escrito) antes de fazer scan de qualquer rede ou sistema que não seja da sua propriedade.
+## ✨ Features
 
-## 📊 Exemplo de Utilização
+### Core Functionality
+
+| Feature | Description |
+|---------|-------------|
+| **TCP Port Scanning** | Uses `socket.connect_ex()` for efficient connection testing |
+| **Service Detection** | Automatically identifies services running on open ports |
+| **Multi-threading** | Concurrent scanning with `ThreadPoolExecutor` |
+| **Smart Timeout** | Configurable timeout (default: 1s) prevents hanging |
+| **Progress Bar** | Real-time visual feedback with percentage |
+| **Local IP Detection** | Automatically displays your local IP address |
+
+### Advanced Features
+
+- 📋 **Common Ports Mode**: Quick scan of most used ports (HTTP, HTTPS, SSH, FTP, etc.)
+- 🎯 **Flexible Port Ranges**: Scan single ports, ranges (`1-1000`), or custom lists (`80,443,8080`)
+- 📁 **Automatic Result Saving**: JSON files with timestamps in `scan_results/` directory
+- 🔧 **Configuration File**: `config.json` for default settings
+- 📊 **Detailed Reports**: Includes scan duration, target info, and service mapping
+- 🧵 **Thread Control**: Adjustable thread count for performance tuning
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- **Python 3.8+**
+- Standard libraries only (no external dependencies!)
+
+### Quick Start
 
 ```bash
-$ python PortScanner.py
-Digite o endereço IP ou nome do host alvo: scanme.nmap.org
---------------------------------------------------
-Escaneando alvo:  scanme.nmap.org
---------------------------------------------------
-Porta 22 - Aberta (ssh)
-Porta 80 - Aberta (http)
---------------------------------------------------
-Escaneamento concluído!
---------------------------------------------------
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/PortScanning.git
+cd PortScanning
+
+# Run the scanner
+python PortScanner.py
 ```
 
-## 💡 Próximos Passos e Oportunidades de Melhoria
+### First Run Setup
 
-Este é um projeto funcional com varredura concorrente implementada.  Para continuar a evoluir a ferramenta e aplicar conceitos avançados de Python, considere as seguintes melhorias:
+On first execution, the tool will create:
+- `config.json` (default configuration)
+- `port_scanner.log` (logging file)
+- `scan_results/` (directory for JSON reports)
 
-1.   **Argumentos de Linha de Comando:** Utilizar a biblioteca `argparse` para permitir que o alvo (`-t <alvo>`), o intervalo de portas (`-p <min>-<max>`) e o número de threads (`--threads <n>`) sejam passados diretamente como argumentos ao executar o script. 
-2.  **Refatoração POO Completa:** Reorganizar a lógica do scanner numa classe `PortScanner`, aplicando completamente os conceitos de Programação Orientada a Objetos (POO) para maior modularidade e extensibilidade.
-3.  **Exportação de Resultados:** Adicionar a capacidade de exportar os resultados do scan para ficheiros (JSON, CSV, XML) para análise posterior. 
-4.  **Detecção de Versão de Serviço:** Implementar *banner grabbing* para tentar identificar a versão dos serviços em execução nas portas abertas.
-5.  **Diferentes Tipos de Scan:** Adicionar suporte para outros tipos de varredura (SYN scan, UDP scan, etc.) utilizando bibliotecas como `scapy`.
-6.  **Interface Gráfica:** Desenvolver uma GUI simples com `tkinter` ou `PyQt` para utilizadores menos familiarizados com a linha de comando. 
-7.  **Logging:** Implementar um sistema de logging para registar todas as operações e resultados do scanner. 
+---
 
-## 📚 Tecnologias Utilizadas
+## 📖 Usage
 
-- **Python 3.x**
-- **socket** - Operações de rede
-- **concurrent.futures** - Multi-threading para execução paralela
-- **sys** - Manipulação do sistema
+### Interactive Mode
 
-## 📄 Licença
+Simply run without arguments:
 
-Este projeto é distribuído sob licença livre para fins educacionais.  Use com responsabilidade e apenas em sistemas para os quais tem autorização. 
+```bash
+python PortScanner.py
+```
+
+You'll be prompted to enter:
+1. Target IP/hostname
+2. Starting port
+3. Ending port
+
+### Command Line Mode
+
+Full control via CLI arguments:
+
+```bash
+python PortScanner.py -t <target> -p <ports> [options]
+```
+
+#### Available Arguments
+
+| Argument | Description | Example |
+|----------|-------------|---------|
+| `-t, --target` | Target IP or hostname | `-t 192.168.1.1` |
+| `-p, --ports` | Port range or list | `-p 1-1000` or `-p 80,443` |
+| `--common` | Scan only common ports | `--common` |
+| `--threads` | Number of threads | `--threads 50` |
+| `--save` | Save results to JSON | `--save` |
+| `--timeout` | Timeout per port (seconds) | `--timeout 2` |
+| `--no-banner` | Hide local IP banner | `--no-banner` |
+| `--help` | Show help message | `--help` |
+
+### Configuration File
+
+Edit `config.json` to customize defaults:
+
+```json
+{
+  "scan_settings": {
+    "default_timeout": 1,
+    "max_threads": 100,
+    "default_start_port": 1,
+    "default_end_port": 100
+  },
+  "common_ports": [80, 443, 22, 21, 25, 53, 110, 143, 3306, 5432],
+  "logging": {
+    "enabled": true,
+    "log_file": "port_scanner.log"
+  },
+  "output": {
+    "save_results": true,
+    "output_directory": "scan_results"
+  }
+}
+```
+
+---
+
+## 💡 Examples
+
+### Example 1: Scan Localhost (Quick Test)
+
+```bash
+python PortScanner.py -t "ip" -p 1-100 --save
+```
+
+**Output:**
+```
+============================================================
+🛡️  PORT SCANNER ENTERPRISE v2.0
+🖥️  Your local IP: 
+============================================================
+
+------------------------------------------------------------
+🎯 Target: 
+📊 Ports: 1 - 100
+🧵 Threads: 100
+------------------------------------------------------------
+Progress: [████████████████████] 100% (100/100)
+
+============================================================
+📋 SCAN SUMMARY
+============================================================
+Target: 
+Ports scanned: 100
+Open ports: 2
+Elapsed time: 1.23s
+
+🔓 Open ports found:
+   • Port    22 - ssh
+   • Port    80 - http
+============================================================
+✅ Results saved to: scan_results/scan_127.0.0.1_20251218_180530.json
+```
+
+### Example 2: Scan Common Ports
+
+```bash
+python PortScanner.py -t scanme.nmap.org --common --save
+```
+
+### Example 3: Scan Specific Ports
+
+```bash
+python PortScanner.py -t example.com -p 80,443,8080,8443
+```
+
+### Example 4: Full Range Scan (Slow but Complete)
+
+```bash
+python PortScanner.py -t 192.168.1.1 -p 1-65535 --threads 200 --timeout 0.5
+```
+
+### Example 5: Interactive Mode
+
+```bash
+python PortScanner.py
+
+# Then follow the prompts:
+Digite o endereço IP ou nome do host alvo: 192.168.1.1
+Porta inicial (padrão 1): 1
+Porta final (padrão 100): 1000
+```
+
+---
+
+## 🏗️ Architecture
+
+### Code Structure
+
+```
+PortScanning/
+├── PortScanner.py          # Main application
+├── config.json             # Configuration file
+├── port_scanner.log        # Logging output
+├── scan_results/           # JSON scan reports
+│   ├── scan_127.0.0.1_20251218_175359.json
+│   └── scan_192.168.1.1_20251218_180542.json
+├── README.md               # Documentation (English)
+├── README_PT.md            # Documentation (Portuguese)
+└── LICENSE                 # MIT License
+```
+
+### Key Functions
+
+| Function | Purpose |
+|----------|---------|
+| `load_config()` | Loads settings from JSON file |
+| `port_scan()` | Tests single port connection |
+| `scan_ports()` | Multi-threaded port range scanner |
+| `save_results()` | Exports scan data to JSON |
+| `validate_target()` | Validates hostname/IP |
+| `get_local_ip()` | Retrieves local machine IP |
+
+### Threading Model
+
+```
+Main Thread
+    │
+    ├─► ThreadPoolExecutor (max_workers=100)
+    │       │
+    │       ├─► Thread 1: scan_with_progress(port 1)
+    │       ├─► Thread 2: scan_with_progress(port 2)
+    │       ├─► Thread 3: scan_with_progress(port 3)
+    │       └─► ... (up to max_threads)
+    │
+    └─► Lock mechanism ensures thread-safe progress updates
+```
+
+---
+
+## ⚠️ Security & Ethics
+
+### Legal Notice
+
+> **⚠️ IMPORTANT**: Unauthorized port scanning may be **ILLEGAL** in many jurisdictions.
+
+**Always ensure you have:**
+- ✅ Written authorization from the system owner
+- ✅ Proper scope defined in a penetration testing agreement
+- ✅ Compliance with local cybersecurity laws
+
+### Ethical Use Only
+
+This tool is intended for:
+- 🎓 Educational purposes
+- 🔒 Authorized security assessments
+- 🛠️ Personal network administration
+- 📚 Cybersecurity research
+
+### Disclaimer
+
+The authors are **NOT responsible** for misuse of this software. Use responsibly and ethically.
+
+---
+
+## 🗺️ Roadmap
+
+### Planned Features
+
+- [ ] **UDP Port Scanning** support
+- [ ] **Banner Grabbing** for service version detection
+- [ ] **Stealth Scanning** (SYN scan using `scapy`)
+- [ ] **HTML Report Generation** with charts
+- [ ] **Vulnerability Database** integration (CVE lookup)
+- [ ] **Network Range Scanning** (CIDR notation: `192.168.1.0/24`)
+- [ ] **GUI Interface** with `tkinter` or `PyQt`
+- [ ] **Email/Telegram Alerts** for monitoring mode
+- [ ] **Database Storage** (SQLite) for historical tracking
+- [ ] **API Endpoint** (Flask/FastAPI) for remote scanning
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+
+1. 🍴 Fork the repository
+2. 🌿 Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. 💾 Commit your changes (`git commit -m 'Add amazing feature'`)
+4. 📤 Push to the branch (`git push origin feature/amazing-feature`)
+5. 🔄 Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Inspired by classic network tools like **Nmap**
+- Built for cybersecurity education and ethical hacking practice
+- Thanks to the Python community for excellent documentation
+
+---
+
+</div>
