@@ -132,6 +132,8 @@ python PortScanner.py -t <target> -p <ports> [options]
 | `--save` | Save results to JSON | `--save` |
 | `--timeout` | Timeout per port (seconds) | `--timeout 2` |
 | `--no-banner` | Hide local IP banner | `--no-banner` |
+| `--client` | Client name for report | `--client "Acme Corp"` |
+| `--project` | Project/engagement name | `--project "Q4 Security Audit"` |
 | `--help` | Show help message | `--help` |
 
 ### Configuration File
@@ -146,6 +148,14 @@ Edit `config.json` to customize defaults:
     "default_start_port": 1,
     "default_end_port": 100
   },
+  "business_info": {
+    "company_name": "Your Security Consulting",
+    "consultant_name": "Security Professional",
+    "email": "contact@yoursecurity.com",
+    "phone": "+1-XXX-XXX-XXXX",
+    "website": "www.yoursecurity.com",
+    "license_number": ""
+  },
   "common_ports": [80, 443, 22, 21, 25, 53, 110, 143, 3306, 5432],
   "logging": {
     "enabled": true,
@@ -153,10 +163,58 @@ Edit `config.json` to customize defaults:
   },
   "output": {
     "save_results": true,
-    "output_directory": "scan_results"
+    "output_directory": "scan_results",
+    "include_business_header": true
   }
 }
 ```
+
+---
+
+## 💼 Professional Consulting Features
+
+**Port Scanner Enterprise** now includes features specifically designed for independent security consultants and professionals running their own business.
+
+### Business Configuration
+
+Edit the `business_info` section in `config.json` to add your company details:
+
+```json
+{
+  "business_info": {
+    "company_name": "Your Security Consulting",
+    "consultant_name": "Security Professional",
+    "email": "contact@yoursecurity.com",
+    "phone": "+1-XXX-XXX-XXXX",
+    "website": "www.yoursecurity.com",
+    "license_number": "SEC-2025-12345"
+  }
+}
+```
+
+### Client Reports
+
+Generate professional reports for clients using the `--client` and `--project` flags:
+
+```bash
+python PortScanner.py -t client-server.com -p 1-1000 \
+  --client "Acme Corporation" \
+  --project "Q4 2025 Security Assessment" \
+  --save
+```
+
+**Generated JSON Report includes:**
+- Client name and project information
+- Your company/consultant contact details
+- Professional header with all business information
+- Detailed scan results with timestamps
+- Service identification
+
+This creates client-ready reports perfect for:
+- 📊 Security audit deliverables
+- 📝 Penetration testing documentation
+- 💼 Compliance assessments
+- 🔍 Network infrastructure reviews
 
 ---
 
@@ -197,25 +255,48 @@ Elapsed time: 1.23s
 ✅ Results saved to: scan_results/scan_127.0.0.1_20251218_180530.json
 ```
 
-### Example 2: Scan Common Ports
+### Example 2: Professional Client Scan
+
+```bash
+python PortScanner.py -t 192.168.1.100 -p 1-1000 \
+  --client "TechStart Inc." \
+  --project "Annual Security Audit 2025" \
+  --save
+```
+
+**Output includes client information:**
+```
+============================================================
+📋 SCAN SUMMARY
+============================================================
+Cliente: TechStart Inc.
+Projeto: Annual Security Audit 2025
+Alvo: 192.168.1.100
+Portas escaneadas: 1000
+Portas abertas: 5
+Tempo decorrido: 12.45s
+...
+```
+
+### Example 3: Scan Common Ports
 
 ```bash
 python PortScanner.py -t scanme.nmap.org --common --save
 ```
 
-### Example 3: Scan Specific Ports
+### Example 4: Scan Specific Ports
 
 ```bash
 python PortScanner.py -t example.com -p 80,443,8080,8443
 ```
 
-### Example 4: Full Range Scan (Slow but Complete)
+### Example 5: Full Range Scan (Slow but Complete)
 
 ```bash
 python PortScanner.py -t 192.168.1.1 -p 1-65535 --threads 200 --timeout 0.5
 ```
 
-### Example 5: Interactive Mode
+### Example 6: Interactive Mode
 
 ```bash
 python PortScanner.py
