@@ -5,6 +5,14 @@
     "default_start_port": 1,
     "default_end_port": 100
   },
+  "business_info": {
+    "company_name": "Your Security Consulting",
+    "consultant_name": "Security Professional",
+    "email": "contact@yoursecurity.com",
+    "phone": "+1-XXX-XXX-XXXX",
+    "website": "www.yoursecurity.com",
+    "license_number": ""
+  },
   "targets": {
     "localhost": "127.0.0.1",
     "example": "scanme.nmap.org"
@@ -18,6 +26,7 @@
   "output": {
     "save_results": true,
     "output_format": "json",
-    "output_directory": "scan_results"
+    "output_directory": "scan_results",
+    "include_business_header": true
   }
 }

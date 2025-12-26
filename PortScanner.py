@@ -50,20 +50,35 @@ def load_config(config_file='config.json'):
         logger.error(f"Erro ao ler config.json: {e}")
         sys.exit(1)
 
-def save_results(scan_data, output_dir='scan_results'):
+def save_results(scan_data, output_dir='scan_results', config=None):
     """
-    Salva resultados do scan em arquivo JSON.
+    Salva resultados do scan em arquivo JSON com informações profissionais.
     """
     try:
         # Cria diretório se não existir
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         
+        # Cria cópia dos dados para não mutar o original
+        output_data = scan_data.copy()
+        
+        # Adiciona informações de negócio ao relatório se configurado
+        if config and config.get('output', {}).get('include_business_header', False):
+            business_info = config.get('business_info', {})
+            output_data['report_header'] = {
+                'company_name': business_info.get('company_name', ''),
+                'consultant_name': business_info.get('consultant_name', ''),
+                'contact_email': business_info.get('email', ''),
+                'contact_phone': business_info.get('phone', ''),
+                'website': business_info.get('website', ''),
+                'license_number': business_info.get('license_number', '')
+            }
+        
         # Nome do arquivo com timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"{output_dir}/scan_{scan_data['target']}_{timestamp}.json"
+        filename = f"{output_dir}/scan_{output_data['target']}_{timestamp}.json"
         
         with open(filename, 'w') as f:
-            json.dump(scan_data, f, indent=2)
+            json.dump(output_data, f, indent=2)
         
         logger.info(f"✅ Resultados salvos em: {filename}")
         return filename
@@ -137,7 +152,7 @@ def port_scan(target, port):
         s.close()
 
 
-def scan_ports(target, start_port, end_port, max_threads=100):
+def scan_ports(target, start_port, end_port, max_threads=100, client_name=None, project_name=None):
     """
     Escaneia um intervalo de portas usando multi-threading.
     Retorna dicionário com resultados do scan.
@@ -190,7 +205,7 @@ def scan_ports(target, start_port, end_port, max_threads=100):
     logger.info(f"Portas abertas encontradas: {len(open_ports)}")
     
     # Retorna resultados estruturados
-    return {
+    results = {
         "target": target,
         "start_port": start_port,
         "end_port": end_port,
@@ -200,6 +215,14 @@ def scan_ports(target, start_port, end_port, max_threads=100):
         "timestamp": datetime.now().isoformat(),
         "scanner_version": "2.0"
     }
+    
+    # Adiciona informações do cliente se fornecidas
+    if client_name:
+        results["client_name"] = client_name
+    if project_name:
+        results["project_name"] = project_name
+    
+    return results
 
 if __name__ == "__main__":
     
@@ -228,6 +251,10 @@ if __name__ == "__main__":
                        help=f'Timeout por porta em segundos (padrão: {config["scan_settings"]["default_timeout"]})')
     parser.add_argument('--no-banner', action='store_true',
                        help='Não mostrar banner de IP local')
+    parser.add_argument('--client', type=str,
+                       help='Nome do cliente para o relatório')
+    parser.add_argument('--project', type=str,
+                       help='Nome do projeto/engajamento')
     
     args = parser.parse_args()
     
@@ -269,6 +296,12 @@ if __name__ == "__main__":
             "scanner_version": "2.0"
         }
         
+        # Adiciona informações do cliente se fornecidas
+        if args.client:
+            all_results["client_name"] = args.client
+        if args.project:
+            all_results["project_name"] = args.project
+        
         start_time = datetime.now()
         
         # Escaneia cada porta comum
@@ -305,7 +338,8 @@ if __name__ == "__main__":
         print(f"🧵 Threads: {args.threads}")
         print("-" * 60)
         
-        results = scan_ports(target_host, start_port, end_port, max_threads=args.threads)
+        results = scan_ports(target_host, start_port, end_port, max_threads=args.threads,
+                           client_name=args.client, project_name=args.project)
         
     else:
         # Modo interativo - pergunta intervalo
@@ -320,13 +354,18 @@ if __name__ == "__main__":
         print(f"📊 Portas: {start_port} - {end_port}")
         print("-" * 60)
         
-        results = scan_ports(target_host, start_port, end_port, max_threads=args.threads)
+        results = scan_ports(target_host, start_port, end_port, max_threads=args.threads,
+                           client_name=args.client, project_name=args.project)
     
     # Mostra resumo
     print()
     print("=" * 60)
     print(f"📋 RESUMO DO SCAN")
     print("=" * 60)
+    if 'client_name' in results:
+        print(f"Cliente: {results['client_name']}")
+    if 'project_name' in results:
+        print(f"Projeto: {results['project_name']}")
     print(f"Alvo: {results['target']}")
     print(f"Portas escaneadas: {results['total_ports_scanned']}")
     print(f"Portas abertas: {len(results['open_ports'])}")
@@ -344,6 +383,6 @@ if __name__ == "__main__":
     # Salva resultados se solicitado
     if args.save or config['output']['save_results']:
         output_dir = config['output'].get('output_directory', 'scan_results')
-        save_results(results, output_dir)
+        save_results(results, output_dir, config)
     
     logger.info("✅ Programa finalizado com sucesso!")
