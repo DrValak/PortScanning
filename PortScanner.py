@@ -58,10 +58,13 @@ def save_results(scan_data, output_dir='scan_results', config=None):
         # Cria diretório se não existir
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         
+        # Cria cópia dos dados para não mutar o original
+        output_data = scan_data.copy()
+        
         # Adiciona informações de negócio ao relatório se configurado
         if config and config.get('output', {}).get('include_business_header', False):
             business_info = config.get('business_info', {})
-            scan_data['report_header'] = {
+            output_data['report_header'] = {
                 'company_name': business_info.get('company_name', ''),
                 'consultant_name': business_info.get('consultant_name', ''),
                 'contact_email': business_info.get('email', ''),
@@ -72,10 +75,10 @@ def save_results(scan_data, output_dir='scan_results', config=None):
         
         # Nome do arquivo com timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"{output_dir}/scan_{scan_data['target']}_{timestamp}.json"
+        filename = f"{output_dir}/scan_{output_data['target']}_{timestamp}.json"
         
         with open(filename, 'w') as f:
-            json.dump(scan_data, f, indent=2)
+            json.dump(output_data, f, indent=2)
         
         logger.info(f"✅ Resultados salvos em: {filename}")
         return filename
